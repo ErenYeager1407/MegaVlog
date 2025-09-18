@@ -16,44 +16,50 @@ export class Service{
 
     // src/appwrite/config.js
 
-async createPost({title, slug, content, featuredImage, status, userid}){ // <-- Change here
+// In src/appwrite/config.js
+
+// Change this function
+async createPost({title, slug, content, featuredImage, status, userid}){
     try {
         return await this.databases.createDocument(
             conf.appwriteDatabaseId,
             conf.appwriteCollectionId,
-            slug,
+            ID.unique(), // Use a unique ID instead of slug
             {
                 title,
                 content,
                 featuredImage,
                 status,
-                userid, // <-- And change here
+                userid,
+                slug // Add slug as a field
             }
         )
     } catch (error) {
-        console.log("Appwrite serive :: createPost :: error", error);
-        throw error
+        console.log("Appwrite service :: createPost :: error", error);
     }
 }
 
-    async updatePost(slug, {title, content, featuredImage, status}){
-        try {
-            return await this.databases.updateDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                slug,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
+// In src/appwrite/config.js
 
-                }
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: updatePost :: error", error);
-        }
+async updatePost(postId, {title, slug, content, featuredImage, status}){ // postId is the unique ID now
+    console.log("Data received by updatePost service:", {title, slug, content});
+    try {
+        return await this.databases.updateDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            postId, // Find document by its real ID
+            {
+                title,
+                content,
+                featuredImage,
+                status,
+                slug, // Update the slug field
+            }
+        )
+    } catch (error) {
+        console.log("Appwrite service :: updatePost :: error", error);
     }
+}
 
     async deletePost(slug){
         try {
